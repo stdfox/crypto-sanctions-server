@@ -1,0 +1,31 @@
+# see definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[package]
+name = "crypto-comply"
+description = "A console command that allows you to check whether a crypto wallet address is on the sanctions list"
+keywords = ["cryptocurrency", "sanctions", "compliance", "ofac", "sdn"]
+categories = ["command-line-utilities"]
+repository = "https://github.com/stdfox/crypto-comply"
+authors = ["stdfox <stdfox@protonmail.com>"]
+license = "MIT"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "~4.5", default-features = false, features = ["derive", "help", "std", "suggestions", "usage"] }
+fern = { version = "~0.6", default-features = false, features = ["colored"] }
+log = { version = "~0.4", default-features = false }
+time = { version = "~0.3", default-features = false, features = ["formatting"] }
+tokio = { version = "~1.36", default-features = false, features = ["macros", "rt-multi-thread"] }
+
+[profile.dev]
+lto = "off"
+debug = 0
+
+[profile.release]
+codegen-units = 1
+strip = "symbols"
+opt-level = 3
+lto = "fat"
+
+[lints.rust]
+unsafe_code = "forbid"
