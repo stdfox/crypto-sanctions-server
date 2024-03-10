@@ -22,6 +22,34 @@ Or build and run in release mode, with optimizations:
 cargo run --release
 ```
 
+## Usage
+
+### Check crypto address
+
+You can verify the address using the check command:
+
+```sh
+crypto-comply check 1EpMiZkQVekM5ij12nMiEwttFPcDK9XhX6
+```
+
+This will print the response in JSON format like this:
+
+```json
+{"address": "1EpMiZkQVekM5ij12nMiEwttFPcDK9XhX6", "sanctioned": true}
+```
+
+It works the same for all blockchains, for example for an Ethereum address:
+
+```sh
+cargo run -- check 0xf3701f445b6bdafedbca97d1e477357839e4120d
+```
+
+It will print:
+
+```json
+{"address": "0xf3701f445b6bdafedbca97d1e477357839e4120d", "sanctioned": true}
+```
+
 ## Contributing
 
 ### Contributor License Agreement
