@@ -24,7 +24,7 @@ impl Default for InMemoryDatabase {
 
 impl DatabaseProvider for InMemoryDatabase {
     async fn save_records(&mut self, records: Vec<String>) -> Result<(), Error> {
-        log::debug!("saving {} sanction records", records.len());
+        log::trace!("saving {} sanction records", records.len());
 
         self.inner.clone_from(&records);
         self.inner.sort();

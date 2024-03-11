@@ -18,6 +18,8 @@ const DEFAULT_URL: &str = "https://www.treasury.gov/ofac/downloads/sdnlist.txt";
 const DEFAULT_TIMEOUT: u64 = 60;
 
 pub(crate) async fn try_update(db: Arc<RwLock<impl DatabaseProvider>>) -> Result<(), Error> {
+    log::info!("updating sanctions list database, this may take a while..");
+
     let payload = try_fetch().await?;
     let records = try_parse(payload).await?;
 

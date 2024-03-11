@@ -1,37 +1,49 @@
-# crypto-sanctions
+# Crypto Sanctions Server
 
-A console command and http server written in Rust that allows you to check whether a crypto wallet address is on the sanctions list.
+An http server written in Rust that allows you to check whether a crypto wallet address is on the sanctions list via json api.
+
+The server is designed to be simple, fast and used behind a reverse proxy or load balancer. However, some of this may change over time.
+
+At the moment, the server does not support operation over the TLS protocol, and therefore **should not be used for requests over the Internet without a part capable for terminating TLS traffic (for example, nginx)**.
+
+Things to think about before releasing 1.0:
+- Boot cache for quick server startup
+- Socks proxy (tor?) for outgoing requests
+- Command line interface options
+- JSON response format
+- TLS support
+- Code coverage and package release
 
 ## Installation
 
 ### Clone Repository
 
 ```sh
-git clone git@github.com:stdfox/crypto-sanctions.git
+git clone git@github.com:stdfox/crypto-sanctions-server.git
 ```
 
 ### Docker
 
-The server side of the application can run inside a docker container. Several steps required:
+The server can run inside a docker container. Several steps required:
 
 #### Build Image
 
 ```sh
-docker build -t crypto-sanctions -f .dockerfile .
+docker build -t crypto-sanctions-server .
 ```
 
 #### Run Container
 
 ```sh
-docker run --detach --rm --name=crypto-sanctions -p 8000:8000 -t crypto-sanctions
+docker run --detach --rm --name=crypto-sanctions-server -p 8000:8000 -t crypto-sanctions-server
 ```
 
 ### Manual
 
-### Build and Run
+#### Build and Run
 
 ```sh
-cargo build
+cargo run
 ```
 
 Or build and run in release mode, with optimizations:
@@ -40,14 +52,22 @@ Or build and run in release mode, with optimizations:
 cargo run --release
 ```
 
+#### Run on Custom Port
+
+You can start the http server on a custom host and port using the following command:
+
+```sh
+cargo run -- --host 0.0.0.0 --port 3000
+```
+
 ## Usage
 
 ### Check Address
 
-You can verify the crypto address using the check command:
+You can check the crypto address using any available http1 client, `curl` for example:
 
 ```sh
-crypto-sanctions check 1EpMiZkQVekM5ij12nMiEwttFPcDK9XhX6
+curl http://127.0.0.1:8000/api/crypto-sanctions/1EpMiZkQVekM5ij12nMiEwttFPcDK9XhX6
 ```
 
 This will print the response in JSON format like this:
@@ -59,7 +79,7 @@ This will print the response in JSON format like this:
 It works the same for all blockchains, for example for an Ethereum address:
 
 ```sh
-crypto-sanctions check 0xf3701f445b6bdafedbca97d1e477357839e4120d
+curl http://127.0.0.1:8000/api/crypto-sanctions/0xf3701f445b6bdafedbca97d1e477357839e4120d
 ```
 
 It will print:
@@ -68,41 +88,23 @@ It will print:
 {"address": "0xf3701f445b6bdafedbca97d1e477357839e4120d", "sanctioned": true}
 ```
 
-### Run HTTP Server
+### Short Alias
 
-You can start the http server using the following command:
-
-```sh
-crypto-sanctions serve
-```
-
-This command also allows you to set a custom host and port:
+If you prefer short console commands to use on desktop, you can add something like this to your shell configuration file (.bashrc, .zshrc, etc):
 
 ```sh
-crypto-sanctions serve --host 0.0.0.0 --port 3000
+crypto-sanction () {
+    command curl http://127.0.0.1:8000/api/crypto-sanctions/$@
+}
 ```
 
-After starting the server (this may take some time, since the server is waiting for the initial database update), you can use any HTTP/1 client to check the address:
+After that you can use the command as follows:
 
 ```sh
-% curl -v http://127.0.0.1:3000/api/crypto-sanctions/0xf3701f445b6bdafedbca97d1e477357839e4120d
-*   Trying 127.0.0.1:3000...
-* Connected to 127.0.0.1 (127.0.0.1) port 3000
-> GET /api/crypto-sanctions/0xf3701f445b6bdafedbca97d1e477357839e4120d HTTP/1.1
-> Host: 127.0.0.1:3000
-> User-Agent: curl/8.6.0
-> Accept: */*
->
-< HTTP/1.1 200 OK
-< Content-Type: application/json
-< Content-Length: 77
-< Date: Mon, 11 Mar 2024 01:32:44 GMT
-<
-* Connection #0 to host 127.0.0.1 left intact
-{"address": "0xf3701f445b6bdafedbca97d1e477357839e4120d", "sanctioned": true}
+% crypto-sanction 0xf3701f445b6bdafedbca97d1e477357839e4120d
 ```
 
-## Server Performance
+## Performance
 
 Since this server works with an in-memory database and does not use a serializer, it is quite performant.
 

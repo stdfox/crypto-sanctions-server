@@ -1,13 +1,13 @@
 # see definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [package]
-name = "crypto-sanctions"
-description = "A console command and http server that allows you to check whether a crypto wallet address is on the sanctions list"
+name = "crypto-sanctions-server"
+description = "An http server that allows you to check whether a crypto wallet address is on the sanctions list via json api"
 keywords = ["cryptocurrency", "sanctions", "compliance", "ofac", "sdn"]
 categories = ["command-line-utilities"]
 repository = "https://github.com/stdfox/crypto-sanctions"
 authors = ["stdfox <stdfox@protonmail.com>"]
 license = "MIT"
-version = "0.2.2"
+version = "0.3.0"
 edition = "2021"
 
 [dependencies]
