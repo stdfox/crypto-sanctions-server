@@ -40,6 +40,5 @@ pub(crate) fn try_init(level: LevelFilter) -> Result<(), Error> {
 }
 
 pub(crate) fn flush() {
-    log::trace!("flush any buffered records");
     log::logger().flush();
 }

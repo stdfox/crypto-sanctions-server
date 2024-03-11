@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use http_body_util::{BodyExt, Empty};
 use hyper::body::Bytes;
 use hyper::Uri;
@@ -6,6 +8,7 @@ use hyper_util::client::legacy::Client;
 use hyper_util::rt::TokioExecutor;
 use itertools::Itertools;
 use regex::Regex;
+use tokio::sync::RwLock;
 use tokio::time::Duration;
 
 use crate::Error;
@@ -13,11 +16,12 @@ use crate::Error;
 const DEFAULT_URL: &str = "https://www.treasury.gov/ofac/downloads/sdnlist.txt";
 const DEFAULT_TIMEOUT: u64 = 60;
 
-pub async fn check_address(address: String) -> Result<bool, Error> {
-    let res = try_fetch().await?;
-    let res = try_parse(res).await?;
+pub(crate) async fn try_update(db: Arc<RwLock<Vec<String>>>) -> Result<(), Error> {
+    let payload = try_fetch().await?;
+    let records = try_parse(payload).await?;
+    let _ = save(db, records).await;
 
-    Ok(res.contains(&address))
+    Ok(())
 }
 
 async fn try_fetch() -> Result<Bytes, Error> {
@@ -60,7 +64,13 @@ async fn try_parse(payload: Bytes) -> Result<Vec<String>, Error> {
         })
         .filter(|s| !s.is_empty())
         .unique_by(|s| s.to_owned())
+        .sorted()
         .collect();
 
     Ok(res)
+}
+
+async fn save(db: Arc<RwLock<Vec<String>>>, records: Vec<String>) {
+    let mut db = db.write().await;
+    *db = records;
 }
