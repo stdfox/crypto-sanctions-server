@@ -10,6 +10,24 @@ A console command and http server written in Rust that allows you to check wheth
 git clone git@github.com:stdfox/crypto-sanctions.git
 ```
 
+### Docker
+
+The server side of the application can run inside a docker container. Several steps required:
+
+#### Build Image
+
+```sh
+docker build -t crypto-sanctions -f .dockerfile .
+```
+
+#### Run Container
+
+```sh
+docker run --detach --rm --name=crypto-sanctions -p 8000:8000 -t crypto-sanctions
+```
+
+### Manual
+
 ### Build and Run
 
 ```sh

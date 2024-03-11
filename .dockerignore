@@ -1,0 +1,6 @@
+# see definitions at https://docs.docker.com/reference/dockerfile/
+/target
+.editorconfig
+.gitattributes
+.gitignore
+README.md
