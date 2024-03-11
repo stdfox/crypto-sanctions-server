@@ -11,17 +11,17 @@ use regex::Regex;
 use tokio::sync::RwLock;
 use tokio::time::Duration;
 
+use crate::database::DatabaseProvider;
 use crate::Error;
 
 const DEFAULT_URL: &str = "https://www.treasury.gov/ofac/downloads/sdnlist.txt";
 const DEFAULT_TIMEOUT: u64 = 60;
 
-pub(crate) async fn try_update(db: Arc<RwLock<Vec<String>>>) -> Result<(), Error> {
+pub(crate) async fn try_update(db: Arc<RwLock<impl DatabaseProvider>>) -> Result<(), Error> {
     let payload = try_fetch().await?;
     let records = try_parse(payload).await?;
-    let _ = save(db, records).await;
 
-    Ok(())
+    db.write().await.save_records(records).await
 }
 
 async fn try_fetch() -> Result<Bytes, Error> {
@@ -68,9 +68,4 @@ async fn try_parse(payload: Bytes) -> Result<Vec<String>, Error> {
         .collect();
 
     Ok(res)
-}
-
-async fn save(db: Arc<RwLock<Vec<String>>>, records: Vec<String>) {
-    let mut db = db.write().await;
-    *db = records;
 }

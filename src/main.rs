@@ -1,3 +1,4 @@
+mod database;
 mod logger;
 mod server;
 mod updater;
@@ -9,10 +10,9 @@ use clap::{Parser, Subcommand};
 use log::LevelFilter;
 use tokio::sync::RwLock;
 
-const DEFAULT_DATABASE_CAPACITY: usize = 1000;
+use crate::database::{DatabaseProvider, InMemoryDatabase};
 
 type Error = Box<dyn std::error::Error + Send + Sync>;
-type Database = Arc<RwLock<Vec<String>>>;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None, arg_required_else_help = true)]
@@ -53,12 +53,12 @@ async fn main() -> Result<(), Error> {
 
     logger::try_init(args.log)?;
 
-    let db = Arc::new(RwLock::new(Vec::with_capacity(DEFAULT_DATABASE_CAPACITY)));
+    let db = Arc::new(RwLock::new(InMemoryDatabase::default()));
     let _ = tokio::spawn(updater::try_update(db.clone())).await??;
 
     match args.command {
         Commands::Check { address } => {
-            let s = db.read().await.contains(&address);
+            let s = db.read().await.search(address.clone()).await?;
             println!("{{\"address\": \"{}\", \"sanctioned\": {}}}", address, s);
         }
         Commands::Serve { host, port } => tokio::spawn(server::serve(host, port, db)).await??,

@@ -88,7 +88,7 @@ After starting the server (this may take some time, since the server is waiting 
 
 Since this server works with an in-memory database and does not use a serializer, it is quite performant.
 
-See the benchmark result on my 2017 MacBook Pro (3,1 GHz Dual-Core Intel Core i5):
+See the benchmark result on my 2017 MacBook Pro (*3,1 GHz Dual-Core Intel Core i5*) for **release** build:
 
 ```
 % ab -k -c 100 -n 1000000 -q http://127.0.0.1:8000/api/crypto-sanctions/0xf3701f445b6bdafedbca97d1e477357839e4120d
@@ -107,34 +107,34 @@ Document Path:          /api/crypto-sanctions/0xf3701f445b6bdafedbca97d1e4773578
 Document Length:        77 bytes
 
 Concurrency Level:      100
-Time taken for tests:   35.827 seconds
+Time taken for tests:   14.328 seconds
 Complete requests:      1000000
 Failed requests:        0
 Keep-Alive requests:    1000000
 Total transferred:      209000000 bytes
 HTML transferred:       77000000 bytes
-Requests per second:    27911.68 [#/sec] (mean)
-Time per request:       3.583 [ms] (mean)
-Time per request:       0.036 [ms] (mean, across all concurrent requests)
-Transfer rate:          5696.82 [Kbytes/sec] received
+Requests per second:    69793.78 [#/sec] (mean)
+Time per request:       1.433 [ms] (mean)
+Time per request:       0.014 [ms] (mean, across all concurrent requests)
+Transfer rate:          14245.02 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
 Connect:        0    0   0.0      0       5
-Processing:     0    4   1.4      4      54
-Waiting:        0    4   1.4      3      54
-Total:          0    4   1.4      4      54
+Processing:     0    1   0.4      1      16
+Waiting:        0    1   0.4      1      16
+Total:          0    1   0.4      1      16
 
 Percentage of the requests served within a certain time (ms)
-  50%      4
-  66%      4
-  75%      4
-  80%      5
-  90%      5
-  95%      6
-  98%      7
-  99%      7
- 100%     54 (longest request)
+  50%      1
+  66%      1
+  75%      1
+  80%      2
+  90%      2
+  95%      2
+  98%      3
+  99%      3
+ 100%     16 (longest request)
 ```
 
 ## Contributing

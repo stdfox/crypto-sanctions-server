@@ -9,10 +9,16 @@ use hyper::server::conn::http1::Builder;
 use hyper::{Method, Request, Response, StatusCode, Version};
 use hyper_util::rt::TokioIo;
 use tokio::net::TcpListener;
+use tokio::sync::RwLock;
 
-use crate::{Database, Error};
+use crate::database::DatabaseProvider;
+use crate::Error;
 
-pub(crate) async fn serve(host: IpAddr, port: u16, db: Database) -> Result<(), Error> {
+pub(crate) async fn serve(
+    host: IpAddr,
+    port: u16,
+    db: Arc<RwLock<impl DatabaseProvider + Send + Sync + 'static>>,
+) -> Result<(), Error> {
     log::info!("starting the server at: http://{}:{}/", host, port);
 
     let listener = match TcpListener::bind(SocketAddr::from((host, port))).await {
@@ -57,7 +63,10 @@ pub(crate) async fn serve(host: IpAddr, port: u16, db: Database) -> Result<(), E
     }
 }
 
-async fn service_fn(req: Request<Incoming>, db: Database) -> Result<Response<Full<Bytes>>, Error> {
+async fn service_fn(
+    req: Request<Incoming>,
+    db: Arc<RwLock<impl DatabaseProvider>>,
+) -> Result<Response<Full<Bytes>>, Error> {
     if req.version() > Version::HTTP_11 {
         return http_version_not_supported();
     }
@@ -76,7 +85,7 @@ async fn service_fn(req: Request<Incoming>, db: Database) -> Result<Response<Ful
                     return bad_request();
                 }
 
-                let s = db.read().await.binary_search(&address.to_string()).is_ok();
+                let s = db.read().await.search(address.to_string()).await?;
                 let body = format!("{{\"address\": \"{}\", \"sanctioned\": {}}}", address, s);
 
                 Response::builder()
