@@ -26,23 +26,31 @@ At the moment, the server does not support operation over the TLS protocol, and 
 
 ## Installation
 
-### Clone Repository
+### Using Cargo
+
+You can install the server locally using the [cargo](https://doc.rust-lang.org/cargo/) package manager command:
 
 ```sh
-git clone git@github.com:stdfox/crypto-sanctions-server.git
+cargo install crypto-sanctions-server
 ```
 
 ### Docker
 
 The server can run inside a docker container. Several steps required:
 
-#### Build Image
+#### Clone repository
+
+```sh
+git clone git@github.com:stdfox/crypto-sanctions-server.git
+```
+
+#### Build docker image
 
 ```sh
 docker build -t crypto-sanctions-server .
 ```
 
-#### Run Container
+#### Run container
 
 ```sh
 docker run --detach --rm --name=crypto-sanctions-server -p 8000:8000 -t crypto-sanctions-server
@@ -50,7 +58,13 @@ docker run --detach --rm --name=crypto-sanctions-server -p 8000:8000 -t crypto-s
 
 ### Manual
 
-#### Build and Run
+#### Clone repository
+
+```sh
+git clone git@github.com:stdfox/crypto-sanctions-server.git
+```
+
+#### Build and run
 
 ```sh
 cargo run
@@ -62,9 +76,9 @@ Or build and run in release mode, with optimizations:
 cargo run --release
 ```
 
-#### Run on Custom Port
+#### Run on custom port
 
-You can start the http server on a custom host and port using the following command:
+You can start the http server on a custom host and port using the following command options:
 
 ```sh
 cargo run -- --host 0.0.0.0 --port 3000
@@ -103,7 +117,7 @@ It will print:
 If you prefer short console commands to use on desktop, you can add something like this to your shell configuration file (.bashrc, .zshrc, etc):
 
 ```sh
-crypto-sanction () {
+crypto-sanctions () {
     command curl http://127.0.0.1:8000/api/crypto-sanctions/$@
 }
 ```
@@ -111,7 +125,7 @@ crypto-sanction () {
 After that you can use the command as follows:
 
 ```sh
-crypto-sanction 0xf3701f445b6bdafedbca97d1e477357839e4120d
+crypto-sanctions 0xf3701f445b6bdafedbca97d1e477357839e4120d
 ```
 
 ## Performance

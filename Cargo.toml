@@ -8,7 +8,7 @@ repository = "https://github.com/stdfox/crypto-sanctions-server"
 homepage = "https://github.com/stdfox/crypto-sanctions-server"
 authors = ["stdfox <stdfox@protonmail.com>"]
 license = "MIT"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2021"
 exclude = [".dockerignore", ".editorconfig", ".gitattributes", ".gitignore", "Dockerfile"]
 
