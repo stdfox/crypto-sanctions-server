@@ -100,6 +100,7 @@ async fn service_fn(
     }
 }
 
+#[inline]
 fn normalize_path(path: &str) -> String {
     let mut segments = vec![];
 
@@ -114,41 +115,46 @@ fn normalize_path(path: &str) -> String {
     segments.join("/")
 }
 
+#[inline]
 fn bad_request() -> Result<Response<Full<Bytes>>, Error> {
     Response::builder()
         .status(StatusCode::BAD_REQUEST)
         .header("content-type", "application/json")
-        .body(format!("{{\"error\": \"bad request\"}}").into())
+        .body(r#"{"error": "an incorrect crypto address was provided"}"#.into())
         .map_err(|e| e.into())
 }
 
+#[inline]
 fn not_found() -> Result<Response<Full<Bytes>>, Error> {
     Response::builder()
         .status(StatusCode::NOT_FOUND)
         .header("content-type", "application/json")
-        .body(format!("{{\"error\": \"not found\"}}").into())
+        .body(r#"{"error": "the resource you requested does not exist"}"#.into())
         .map_err(|e| e.into())
 }
 
+#[inline]
 fn method_not_allowed(allowed: &str) -> Result<Response<Full<Bytes>>, Error> {
     Response::builder()
         .status(StatusCode::METHOD_NOT_ALLOWED)
         .header("allow", allowed)
         .header("content-type", "application/json")
-        .body(format!("{{\"error\": \"method not allowed\"}}").into())
+        .body(r#"{"error": "the method you requested is not allowed"}"#.into())
         .map_err(|e| e.into())
 }
 
+#[inline]
 fn http_version_not_supported() -> Result<Response<Full<Bytes>>, Error> {
     Response::builder()
         .status(StatusCode::HTTP_VERSION_NOT_SUPPORTED)
         .header("content-type", "application/json")
-        .body(format!("{{\"error\": \"http version not supported\"}}").into())
+        .body(r#"{"error": "the http version you requested is not supported"}"#.into())
         .map_err(|e| e.into())
 }
 
+#[inline]
 fn internal_server_error() -> Response<Full<Bytes>> {
-    let mut res = Response::new(format!("{{\"error\": \"internal server error\"}}").into());
+    let mut res = Response::new(r#"{"error": "an internal error has occurred"}"#.into());
     *res.status_mut() = StatusCode::INTERNAL_SERVER_ERROR;
     res.headers_mut()
         .insert("content-type", HeaderValue::from_static("application/json"));
