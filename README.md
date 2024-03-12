@@ -1,34 +1,47 @@
 # Crypto Sanctions Server
 
-An http server written in Rust that allows you to check whether a crypto wallet address is on the sanctions list via json api.
+To make sure that you are not interacting with a sanctioned person or organization when sending or receiving cryptocurrencies, you need to run a small compliance check for the presence of crypto addresses on the sanctioned lists.
 
-The server is designed to be simple, fast and used behind a reverse proxy or load balancer. However, some of this may change over time.
+The simplest thing you can do is download the sanctioned persons list file from the [official government website](https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas) and find the address you are interested in (for example, using the grep command).
 
-At the moment, the server does not support operation over the TLS protocol, and therefore **should not be used for requests over the Internet without a part capable for terminating TLS traffic (for example, nginx)**.
+However, in a distributed system, obvious problems such as cache invalidation, outgoing requests via the Internet, and duplication of updater/parser code arise.
+
+This project is a small http server written in Rust intended to solve these problems and allow you to check whether a crypto wallet address is on the sanctions list via simple json api.
+
+It is an open source alternative to tools such as: [Chainalysis Sanctions Screening Tools](https://www.chainalysis.com/free-cryptocurrency-sanctions-screening-tools/) or [TRM Sanctions Screening API](https://www.trmlabs.com/products/sanctions).
+
+At the moment, the server does not support operation over the TLS protocol, and therefore **should not be used for requests over the Internet without a part capable for terminating TLS traffic** (for example, nginx).
 
 ## Design Principles
 
+The server is designed to be simple, fast and used behind a reverse proxy or load balancer. However, some of this may change over time.
+
 ### Server must...
+
 - Be as fast as possible without turning source into a mess of optimized write-only code
 - Be secure and follow best security practices, but no more than is required for safe use
-- Follow the HTTP protocol as much as possible because of the need to be able to work with any compatible client
+- Follow the HTTP protocol as much as possible to ensure compatibility with any client
 
-### Things to think about before releasing 1.0:
-- Boot cache for quick server startup
+### Things to think about before v1.0
+
+- Startup cache and it's invalidation policy
+- Retry policy for outgoing requests
 - Socks proxy (tor?) for outgoing requests
 - Health status support for load balancing
-- Command line interface options
-- JSON response format
-- Requesting all database records
-- Batch address check
+- Signal processing and graceful shutdown
+- Expose more command line configuration options
+- JSON response format and extended info
+- Dump of all database records
+- Batch address check (cors support for post req?)
 - TLS support
 - Code coverage and package release
+- Possibility of effective compression
 
 ## Installation
 
 ### Using Cargo
 
-You can install the server locally using the [cargo](https://doc.rust-lang.org/cargo/) package manager command:
+You can easily install the server locally using the [cargo](https://doc.rust-lang.org/cargo/) package manager command:
 
 ```sh
 cargo install crypto-sanctions-server
@@ -112,7 +125,7 @@ It will print:
 {"address": "0xf3701f445b6bdafedbca97d1e477357839e4120d", "sanctioned": true}
 ```
 
-### Short Alias
+### Short Command
 
 If you prefer short console commands to use on desktop, you can add something like this to your shell configuration file (.bashrc, .zshrc, etc):
 
