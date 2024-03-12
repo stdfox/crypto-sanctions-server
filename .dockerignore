@@ -3,4 +3,5 @@
 .editorconfig
 .gitattributes
 .gitignore
+CHANGELOG.md
 README.md
