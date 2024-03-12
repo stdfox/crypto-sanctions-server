@@ -6,11 +6,21 @@ The server is designed to be simple, fast and used behind a reverse proxy or loa
 
 At the moment, the server does not support operation over the TLS protocol, and therefore **should not be used for requests over the Internet without a part capable for terminating TLS traffic (for example, nginx)**.
 
-Things to think about before releasing 1.0:
+## Design Principles
+
+### Server must...
+- Be as fast as possible without turning source into a mess of optimized write-only code
+- Be secure and follow best security practices, but no more than is required for safe use
+- Follow the HTTP protocol as much as possible because of the need to be able to work with any compatible client
+
+### Things to think about before releasing 1.0:
 - Boot cache for quick server startup
 - Socks proxy (tor?) for outgoing requests
+- Health status support for load balancing
 - Command line interface options
 - JSON response format
+- Requesting all database records
+- Batch address check
 - TLS support
 - Code coverage and package release
 
@@ -101,14 +111,12 @@ crypto-sanction () {
 After that you can use the command as follows:
 
 ```sh
-% crypto-sanction 0xf3701f445b6bdafedbca97d1e477357839e4120d
+crypto-sanction 0xf3701f445b6bdafedbca97d1e477357839e4120d
 ```
 
 ## Performance
 
-Since this server works with an in-memory database and does not use a serializer, it is quite performant.
-
-See the benchmark result on my 2017 MacBook Pro (*3,1 GHz Dual-Core Intel Core i5*) for **release** build:
+Since this server works with an in-memory database and does not use a serializer, it is quite performant. See the benchmark result on my good old 2017 MacBook Pro (*3,1 GHz Dual-Core Intel Core i5*) for **release** build:
 
 ```
 % ab -k -c 100 -n 1000000 -q http://127.0.0.1:8000/api/crypto-sanctions/0xf3701f445b6bdafedbca97d1e477357839e4120d
